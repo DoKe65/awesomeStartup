@@ -7,6 +7,7 @@ const modalDetail = document.createElement("article");
 const closeModal = document.createElement("button");
 const prev = document.createElement("a");
 const next = document.createElement("a");
+let index = 0;
 
 // import 12 employees from https://randomuser.me
 // convert the result
@@ -83,42 +84,39 @@ list.addEventListener("click", (e) => {
 function generateModal(index) {
 
   // create the modal container
-  let currentIndex = index;
+  // let currentIndex = index;
   modal.setAttribute("id", "employee-modal");
   modal.style.display = "block";
 
   // create html for modal
   createModalDetail(index);
 
-  // add functionallity to the close button and arrows
-  modal.addEventListener("click", (e) => {
-    if(e.target === closeModal) {
-      modal.style.display = "none";
-      modal.removeChild(modalDetail);
-    } else if(e.target === prev) {
-      // display previous employee
-      index --;
-      employee = employees[index];
-      modalDetail.innerHTML = createModalDetailHTML(employee);
-      addNavigation(modalDetail);
-      if (index === 0 ) {
-        prev.style.display = "none";
-      }
-    } else if(e.target === next) {
-      // display next employee
-      index ++;
-      employee = employees[index];
-      modalDetail.innerHTML = createModalDetailHTML(employee);
-      addNavigation(modalDetail);
-      if (index === 11 ) {
-        next.style.display = "none";
-      }
-    }
-  });
+
 
   modal.appendChild(modalDetail);
   document.body.appendChild(modal);
 }
+
+// add functionallity to the close button and arrows
+modal.addEventListener("click", (e) => {
+  if(e.target === closeModal) {
+    modal.removeChild(modalDetail);
+    modal.style.display = "none";
+  } else if(e.target === prev) {
+    // display previous employee
+    index --;
+    employee = employees[index];
+    // modal.removeChild(modalDetail);
+    modalDetail.innerHTML = createModalDetailHTML(employee);
+    addNavigation(modalDetail, index);
+  } else if(e.target === next) {
+    // display next employee
+    index ++;
+    employee = employees[index];
+    modalDetail.innerHTML = createModalDetailHTML(employee);
+    addNavigation(modalDetail, index);
+  }
+});
 
 function createModalDetailHTML(employee) {
   const employeeDetail = `
@@ -136,26 +134,31 @@ function createModalDetailHTML(employee) {
   return employeeDetail;
 }
 
-function addNavigation(parent) {
+function addNavigation(parent, index) {
   // create the close button for the modal
   closeModal.classList.add("close-modal");
   closeModal.innerHTML = "Close Employee Details";
   parent.appendChild(closeModal);
   // create arrows to switch to next/previous employees
-  prev.classList.add("prev");
-  prev.innerHTML = "<";
-  parent.appendChild(prev);
+  if (index > 0) {
+    prev.classList.add("prev");
+    prev.innerHTML = "<";
+    parent.appendChild(prev);
+  }
 
-  next.classList.add("next");
-  next.innerHTML = ">";
-  parent.appendChild(next);
+  if (index < employees.length -1) {
+    next.classList.add("next");
+    next.innerHTML = ">";
+    parent.appendChild(next);
+  }
 }
 
 function createModalDetail(index) {
-modalDetail.setAttribute("class", "modal-detail");
-// modalDetail.setAttribute("data-index", currentIndex);
-let employee = employees[index];
-modalDetail.innerHTML = createModalDetailHTML(employee);
-addNavigation(modalDetail);}
+  modalDetail.setAttribute("class", "modal-detail");
+  // modalDetail.setAttribute("data-index", currentIndex);
+  let employee = employees[index];
+  modalDetail.innerHTML = createModalDetailHTML(employee);
+  addNavigation(modalDetail, index);
+}
 
 generateData();
