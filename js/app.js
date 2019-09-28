@@ -8,6 +8,7 @@ const closeModal = document.createElement("button");
 const prev = document.createElement("a");
 const next = document.createElement("a");
 let index = 0;
+const searchField = document.getElementById("search");
 
 // import 12 employees from https://randomuser.me
 // convert the result
@@ -33,7 +34,7 @@ function generateEmployees(data) {
       <section class="employee-card" data-index=${index}><img class="employee-img" src=${result.picture.large}>
       <div class="card">
       <h2>${name}</h2>
-      <p>${result.email}</p>
+      <p>${result.email.toLowerCase()}</p>
       <p>${city}</p>
       </div>
       </section>`;
@@ -45,8 +46,8 @@ function generateEmployees(data) {
       name,
       city,
       phone: result.phone,
-      email: result.email,
-      street: changeCase(result.location.street),
+      email: result.email.toLowerCase(),
+      street: `${result.location.street.number} ${changeCase(result.location.street.name)}`,
       nationality: result.nat.toUpperCase(),
       zipCode: result.location.postcode,
       image: result.picture.large,
@@ -61,13 +62,14 @@ function generateEmployees(data) {
 
 function changeCase(str) {
   str = str.replace("ß", "ss");
-  if(str.includes("-") || str.includes("/") || str.includes("\'")) {
-    str = str.replace("-", " - ");
-  }
+  str = str.replace("-", " - ");
+  str = str.replace("/", " - ");
+  str = str.replace("\'", " \' ");
   let words = str.split(" ");
   let newString = [];
   words.forEach(word => newString += `${word[0].toUpperCase()}${word.slice(1)} `);
   newString = newString.replace(" - ", "-");
+  newString = newString.replace(" \' ", "\'");
   return newString;
 }
 
@@ -84,39 +86,14 @@ list.addEventListener("click", (e) => {
 function generateModal(index) {
 
   // create the modal container
-  // let currentIndex = index;
   modal.setAttribute("id", "employee-modal");
   modal.style.display = "block";
 
   // create html for modal
   createModalDetail(index);
-
-
-
   modal.appendChild(modalDetail);
   document.body.appendChild(modal);
 }
-
-// add functionallity to the close button and arrows
-modal.addEventListener("click", (e) => {
-  if(e.target === closeModal) {
-    modal.removeChild(modalDetail);
-    modal.style.display = "none";
-  } else if(e.target === prev) {
-    // display previous employee
-    index --;
-    employee = employees[index];
-    // modal.removeChild(modalDetail);
-    modalDetail.innerHTML = createModalDetailHTML(employee);
-    addNavigation(modalDetail, index);
-  } else if(e.target === next) {
-    // display next employee
-    index ++;
-    employee = employees[index];
-    modalDetail.innerHTML = createModalDetailHTML(employee);
-    addNavigation(modalDetail, index);
-  }
-});
 
 function createModalDetailHTML(employee) {
   const employeeDetail = `
@@ -153,12 +130,61 @@ function addNavigation(parent, index) {
   }
 }
 
+// add functionallity to the close button and arrows
+modal.addEventListener("click", (e) => {
+  if(e.target === closeModal) {
+    modal.removeChild(modalDetail);
+    modal.style.display = "none";
+  } else if(e.target === prev) {
+    // display previous employee
+    index --;
+    employee = employees[index];
+    // modal.removeChild(modalDetail);
+    modalDetail.innerHTML = createModalDetailHTML(employee);
+    addNavigation(modalDetail, index);
+  } else if(e.target === next) {
+    // display next employee
+    index ++;
+    employee = employees[index];
+    modalDetail.innerHTML = createModalDetailHTML(employee);
+    addNavigation(modalDetail, index);
+  }
+});
+
 function createModalDetail(index) {
   modalDetail.setAttribute("class", "modal-detail");
-  // modalDetail.setAttribute("data-index", currentIndex);
   let employee = employees[index];
   modalDetail.innerHTML = createModalDetailHTML(employee);
   addNavigation(modalDetail, index);
 }
 
 generateData();
+
+// Search for employees
+function search() {
+  let searchValue = searchField.value.toLowerCase();
+  let employeeCard = document.querySelectorAll(".employee-card");
+  let employeeText = document.querySelectorAll(".card");
+  for (let i = 0; i < employeeCard.length; i++) {
+    let title = employeeText[i].getElementsByTagName("h2")[0];
+    let name = title.textContent;
+    name = removeAccent(name);
+    if (name.toLowerCase().indexOf(searchValue) > -1) {
+      employeeCard[i].style.display = "";
+    } else {
+      employeeCard[i].style.display = "none";
+    }
+  }
+}
+
+// remove Accents and Umlauts for search
+function removeAccent(str) {
+  str = str.replace("ß", "ss");
+  str = str.replace(/[éêèë]/gi, "e");
+  str = str.replace(/[äàâ]/gi, "a");
+  str = str.replace(/[öôò]/gi, "o");
+  str = str.replace(/[üûù]/gi, "u");
+  return str;
+}
+
+searchField.addEventListener("keyup", (e) => search());
