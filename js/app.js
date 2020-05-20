@@ -7,7 +7,7 @@ const modalDetail = document.createElement("article");
 const closeModal = document.createElement("button");
 const prev = document.createElement("a");
 const next = document.createElement("a");
-let index = 0;
+// let index = 0;
 const searchField = document.getElementById("search");
 
 // import 12 employees from https://randomuser.me
@@ -131,31 +131,35 @@ function addNavigation(parent, index) {
 }
 
 // add functionallity to the close button and arrows
-modal.addEventListener("click", (e) => {
-  if(e.target === closeModal) {
-    modal.removeChild(modalDetail);
-    modal.style.display = "none";
-  } else if(e.target === prev) {
-    // display previous employee
-    index --;
-    employee = employees[index];
-    // modal.removeChild(modalDetail);
-    modalDetail.innerHTML = createModalDetailHTML(employee);
-    addNavigation(modalDetail, index);
-  } else if(e.target === next) {
-    // display next employee
-    index ++;
-    employee = employees[index];
-    modalDetail.innerHTML = createModalDetailHTML(employee);
-    addNavigation(modalDetail, index);
-  }
-});
+function navigation(index) {
+  modal.addEventListener("click", (e) => {
+    if(e.target === closeModal) {
+      modal.removeChild(modalDetail);
+      modal.style.display = "none";
+    } else if(e.target === prev) {
+      // display previous employee
+      index --;
+      employee = employees[index];
+      // modal.removeChild(modalDetail);
+      modalDetail.innerHTML = createModalDetailHTML(employee);
+      addNavigation(modalDetail, index);
+    } else if(e.target === next) {
+      // display next employee
+      index ++;
+      employee = employees[index];
+      modalDetail.innerHTML = createModalDetailHTML(employee);
+      addNavigation(modalDetail, index);
+    }
+  });
+}
+
 
 function createModalDetail(index) {
   modalDetail.setAttribute("class", "modal-detail");
   let employee = employees[index];
   modalDetail.innerHTML = createModalDetailHTML(employee);
   addNavigation(modalDetail, index);
+  navigation(index);
 }
 
 generateData();
