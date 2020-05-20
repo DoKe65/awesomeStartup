@@ -128,13 +128,14 @@ function addNavigation(parent, index) {
     next.innerHTML = ">";
     parent.appendChild(next);
   }
+  navigation(index);
 }
 
 // add functionallity to the close button and arrows
 function navigation(index) {
   modal.addEventListener("click", (e) => {
     if(e.target === closeModal) {
-      modal.removeChild(modalDetail);
+      modalDetail.innerHTML = "";
       modal.style.display = "none";
     } else if(e.target === prev) {
       // display previous employee
@@ -159,7 +160,7 @@ function createModalDetail(index) {
   let employee = employees[index];
   modalDetail.innerHTML = createModalDetailHTML(employee);
   addNavigation(modalDetail, index);
-  navigation(index);
+  // navigation(index);
 }
 
 generateData();
